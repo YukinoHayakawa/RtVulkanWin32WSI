@@ -91,13 +91,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="VulkanSwapchain.cpp" />
-    <ClCompile Include="VulkanSwapchainImage.cpp" />
     <ClCompile Include="VulkanWin32WSI.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="VulkanSwapchain.hpp" />
-    <ClInclude Include="VulkanSwapchainImage.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Usagi\Usagi\Usagi.vcxproj">

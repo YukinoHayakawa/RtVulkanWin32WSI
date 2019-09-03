@@ -1,14 +1,18 @@
-﻿#ifdef _WIN32
+﻿/*
+ * This file implements platform-dependent functions in VulkanGpuDevice.
+ * To choose an implementation on each platform, link with related project.
+ */
+
+#ifdef _WIN32
 
 #include <Usagi/Extensions/RtWin32/Win32.hpp>
 #define VK_USE_PLATFORM_WIN32_KHR
 #include <Usagi/Extensions/RtVulkan/VulkanGpuDevice.hpp>
+#include <Usagi/Extensions/RtVulkan/VulkanSwapchain.hpp>
 
 #include <Usagi/Core/Logging.hpp>
 #include <Usagi/Utility/TypeCast.hpp>
 #include <Usagi/Extensions/RtWin32/Window/Win32Window.hpp>
-
-#include "VulkanSwapchain.hpp"
 
 void usagi::VulkanGpuDevice::addPlatformSurfaceExtension(
     std::vector<const char *> &extensions)
@@ -29,16 +33,19 @@ std::shared_ptr<usagi::Swapchain> usagi::VulkanGpuDevice::createSwapchain(
     surface_create_info.setHwnd(win32_window.handle());
 
     auto surface = mInstance->createWin32SurfaceKHRUnique(surface_create_info);
-    assert(mPhysicalDevice.getSurfaceSupportKHR(
+    if(!mPhysicalDevice.getSurfaceSupportKHR(
         mGraphicsQueueFamilyIndex, surface.get()
-    ));
+    )) USAGI_THROW(std::runtime_error(
+        "Graphics queue doesn't support Win32 surface"));
     return std::make_shared<VulkanSwapchain>(this, std::move(surface));
 }
 
 void usagi::VulkanGpuDevice::checkQueuePresentationCapacity(
     const uint32_t queue_family_index) const
 {
-    assert(mPhysicalDevice.getWin32PresentationSupportKHR(queue_family_index));
+    if(!mPhysicalDevice.getWin32PresentationSupportKHR(queue_family_index))
+        USAGI_THROW(std::runtime_error(
+            "Graphics queue doesn't support Win32 presentation"));
 }
 
 #endif
